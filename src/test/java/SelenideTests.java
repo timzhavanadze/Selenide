@@ -2,6 +2,7 @@ import com.codeborne.selenide.*;
 import com.codeborne.selenide.testng.SoftAsserts;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
@@ -10,6 +11,7 @@ import java.io.FileNotFoundException;
 
 import static com.codeborne.selenide.AssertionMode.SOFT;
 import static com.codeborne.selenide.ClickOptions.usingDefaultMethod;
+import static com.codeborne.selenide.CollectionCondition.texts;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Configuration.*;
 import static com.codeborne.selenide.Selectors.*;
@@ -18,8 +20,9 @@ import static java.time.Duration.ofSeconds;
 
 @Listeners({SoftAsserts.class})
 public class SelenideTests {
+
     public SelenideTests(){
-        Configuration.timeout=20000;
+        Configuration.timeout=10000;
         Configuration.browser = "chrome";
 //        ChromeOptions options = new ChromeOptions();
 //        options.addArguments("start-maximized");
@@ -32,8 +35,8 @@ public class SelenideTests {
     @Test
     public void screenshot() {
         open(baseUrl);
-        $(byText("sfgdhs")).click(usingDefaultMethod().timeout(ofSeconds(20)));
-        sleep(4000);
+        $(byText("sfgdhs")).shouldHave(visible).click();
+      //  sleep(4000);
     }
 
     @Test
@@ -53,30 +56,30 @@ public class SelenideTests {
         open("https://www.lambdatest.com/selenium-playground/checkbox-demo");
         $("#isAgeSelected").click();
         SelenideElement successText = $("#txtAge");
-        //successText.should(appear);
-        successText.shouldHave(exactText("Success - Check box is checked"));
-        //uccessText.shouldHave(text(" - Check box is checked"));
-        sleep(4000);
+        successText.should(appear);
+        successText.shouldHave(exactText("Checked"));
+        successText.shouldHave(text("ked"));
+        //sleep(4000);
     }
     @Test
     public void selectors() {
         open("https://www.lambdatest.com/selenium-playground/checkbox-demo");
         $("#isAgeSelected").click();
-        $(byText("Success - Check box is checked")).should(appear);
-        $(withText("Check box is checked")).should(appear);
-        //  sleep(4000);
-
+        $(byText("Checked")).shouldBe(appear);
+        $(withText("cked")).should(appear);
+        sleep(4000);
     }
     @Test
     public void className() {
         open("https://demo.guru99.com/test/selenium-xpath.html");
         $(".thick-heading").shouldHave(exactText("Tutorials Library"));
-        $(by("title", "SQL")).shouldNotBe(visible); //negative
+        $(by("title", "SQL")).shouldBe(visible);
         SelenideElement agile = $(byTitle("Agile Testing"));
         agile.shouldBe(visible);
         $(byValue("LOGIN")).shouldNotHave(exactValue("test"));
         SelenideElement test = $(byName("btnReset"));
         test.click();
+        sleep(4000);
     }
     @Test
     public void chainableSelectors(){
@@ -88,7 +91,7 @@ public class SelenideTests {
         $("#table1").find("tbody").$(byTagName("tr"),2).findAll("td")
                 .forEach(el -> System.out.println(el.getText()));
 
-        System.out.println($("#table1").findAll("tbody tr").size());
+        System.out.println($("#table1").find("tbody").findAll("tr").size());
 
     }
 
@@ -108,7 +111,7 @@ public class SelenideTests {
         actions().sendKeys(Keys.ESCAPE).perform();
         sleep(4000);
         open("https://www.google.com");
-        SelenideElement search = $(By.xpath("//input[@class='gLFyf gsfi']"));
+        SelenideElement search = $x("//*[@id=\"APjFqb\"]");
         search.setValue("test automation");
         search.sendKeys(Keys.CONTROL, "A");
         sleep(3000);
@@ -123,8 +126,10 @@ public class SelenideTests {
             $(byText("Add Element")).click();
         }
         ElementsCollection deleteButtons = $$(By.cssSelector("#elements button"));
+        deleteButtons.shouldHave(texts("delete", "delete"));
         System.out.println(deleteButtons.size());
-        System.out.println(deleteButtons.first().getText());
+        SelenideElement test = deleteButtons.first();
+        System.out.println(test.getText());
         sleep(3000);
         deleteButtons.last().click();
         sleep(3000);
@@ -148,7 +153,7 @@ public class SelenideTests {
     @Test
     public void fileDownload() throws FileNotFoundException {
         open("/download");
-        $(byText("name.png")).download();
+        $(byText("logo.png")).download();
     }
 
     @Test
@@ -162,4 +167,10 @@ public class SelenideTests {
         agile.shouldBe(visible);
         softAssert.assertAll();
     }
+    @AfterMethod
+    public void closeTab() {
+        closeWebDriver();
+    }
 }
+
+

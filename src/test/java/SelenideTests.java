@@ -158,14 +158,23 @@ public class SelenideTests {
 
     @Test
     public void softAssert() {
-        Configuration.assertionMode = SOFT;
         SoftAssert softAssert = new SoftAssert();
         open("https://demo.guru99.com/test/selenium-xpath.html");
-        softAssert.assertEquals($(".thick-heading").getText(), "incorrect text");
+        softAssert.assertEquals($(".thick-heading").getText(), "incorrect text", "message");
         SelenideElement agile = $(byTitle("Agile Testing"));
         System.out.println($(".thick-heading").getText());
         agile.shouldBe(visible);
         softAssert.assertAll();
+    }
+
+    @Test
+    public void soft(){
+        Configuration.assertionMode = SOFT;
+        open("/dropdown");
+        $("#dropdown").selectOption("Option 1");
+        $("#dropdown").getSelectedOption().shouldNotHave(value("1"));
+        $("#dropdown").getSelectedOption().shouldNotHave(matchText("ption 1"),value("1"));
+        System.out.println("test");
     }
     @AfterMethod
     public void closeTab() {
